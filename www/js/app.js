@@ -18,40 +18,41 @@ example.run(function($ionicPlatform) {
   });
 })
 
-example.controller("ExampleController", function($scope, $cordovaFileTransfer, $cordovaCamera) {
+example.controller("ExampleController", function($scope, $cordovaFileTransfer, $cordovaCamera, $cordovaFile) {
 
     $scope.pictureUrl = 'http://placehold.it/300x300'
 
     //take picture
     $scope.takePicture = function() {
       var options = {
-        quality: 100,
-        destinationType: Camera.DestinationType.NATIVE_URI,
+        quality: 75,
+        destinationType: Camera.DestinationType.FILE_URI,
         sourceType: Camera.PictureSourceType.CAMERA,
+        allowEdit: true,
         encodingType: Camera.EncodingType.JPEG,
+        targetWidth: 300,
+        targetHeight: 300,
         popoverOptions: CameraPopoverOptions,
-        saveToPhotoAlbum: true
+        saveToPhotoAlbum: true,
+        correctOrientation:true,
       };
 
       $cordovaCamera.getPicture(options)
         .then(function(imageData) {
             console.log('camera data: ' + angular.toJson(imageData));
             $scope.pictureUrl = imageData;
-           // $scope.pictureUrl = "data:image/jpeg;base64," + imageData;;
+            //$scope.pictureUrl = "data:image/jpeg;base64," + imageData;
         }, function(err) {
             console.log('camera error: ' + angular.toJson(imageData));
+            alert("Error: " + err);
         });
     };
 
     //upload from photo library
     $scope.openPhotoLibrary = function() {
       var options = {
-        quality: 100,
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
         destinationType: Camera.DestinationType.FILE_URI,
-        allowEdit: true,
-        encodingType: Camera.EncodingType.JPEG,
-        correctOrientation:true
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
       };
 
       $cordovaCamera.getPicture(options)
@@ -59,10 +60,8 @@ example.controller("ExampleController", function($scope, $cordovaFileTransfer, $
             console.log('camera data: ' + angular.toJson(imageData));
             $scope.pictureUrl = imageData;
 
-             var server = "http://192.168.1.75:1688/upload"
+             var server = "http://192.168.1.73:1688/upload"
                 filePath = imageData;
-
-            var date = new Date();
 
             var options = {
                 fileKey: "file",
